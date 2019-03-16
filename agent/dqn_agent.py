@@ -12,6 +12,9 @@ from keras import backend as K
 def _explode_array(array):
     return [[a] for a in array]
 
+"""
+One Hot Encoding is the representation of categorical variables as binary vectors
+"""
 SUIT_TO_INT_ENC = LabelEncoder().fit(['H', 'S', 'D', 'C'])
 SUIT_INT_TO_ONEHOT_ENC = OneHotEncoder(sparse=False).fit(_explode_array(range(0, 4)))
 VALUE_INT_TO_ONEHOT_ENC = OneHotEncoder(sparse=False).fit(_explode_array(range(2, 15)))
@@ -37,9 +40,22 @@ class DQNAgent:
         self.state_size = state_size
         self.action_size = action_size
         self.num_agents = num_agents
-        self.epsilon = starting_epsilon  # exploration rate
+        """
+        Usually, the value of Epsilon decreases over time,
+        it can be modelled by epsilon = (n+1)** -0.5
+        In this case, the Epsilon decreases in this manner: e *= epsilon_decay per round of execution.
+        Epsilon is lower bounded by epsilon_min
+        Epsilon decreases as we want to explore more in the early stages and exploit more in the later stages
+        """
+        self.epsilon = starting_epsilon  # exploration rate, See epsilon-greedy policy.
         self.epsilon_min = e_min
         self.epsilon_decay = e_decay
+        """
+        discount rate is used in calculating the total gain for any given action-state pair.
+        
+        G(s,a) = Expectation[Reward(s+1) + gamma*G(s+1, a+1) | State = s, Action = a] 
+        Note that G(s,a) is recursively defined, so gamma compounds for future gains.
+        """
         self.gamma = gamma  # discount rate
 
         self.learning_rate = 0.001
