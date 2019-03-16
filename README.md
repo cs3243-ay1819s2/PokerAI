@@ -9,13 +9,14 @@ A self-learning multi-agent poker player, a la AlphaGo. It learns but doesn't wo
 
 ## How to run the code
 * python main.py 
-* install all the relevant modules with pip install "module name"
-
+    * All usages of python are alias to python 3.x 
+    * Minimum is python 3.7.2
+* install all the relevant modules with pip install "module name" or  `pip install -r requirements.txt` 
 
 ## Code details
 * Each run is 30 episodes long by default
 * Each episode has 100 games by default
-* Arguments can be inputted at end of executing the command "python       main.py" with the relevant flags
+* Arguments can be inputted at end of executing the command "python main.py" with the relevant flags
 
     * -a (number of agents) - default 4
     * -g (number of games) - default 100
