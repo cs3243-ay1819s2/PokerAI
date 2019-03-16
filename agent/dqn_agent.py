@@ -69,36 +69,70 @@ class DQNAgent:
         # model.add(Dense(64, activation='relu'))
         # model.add(Dense(64, activation='relu'))
         model.add(Dense(self.action_size, activation='linear'))
+        # Note: MSE = Mean Squared Error
         model.compile(loss='mse',       # if you change this, make sure to change it in set_model
                       optimizer=Adam(lr=self.learning_rate))
         return model
 
     def remember(self, state, action, reward, next_state, done):
+        """
+        This is used later on for experience replay
+        (s, a, r, s', is_terminal)
+        :param state:
+        :param action:
+        :param reward:
+        :param next_state:
+        :param done:
+        :return:
+        """
         MEMORY.append((state, action, reward, next_state, done))
 
     def act(self, state):
         state = state.reshape((1, 1, len(state)))
+        """
+        Exploration is triggered if rand is less than epsilon
+        """
         if np.random.rand() <= self.epsilon:
             return np.random.uniform(low=-10, high=10, size=(self.action_size,))
 
+        """
+        else, exploitation
+        """
         act_values = self.model.predict([state])[0]
         return act_values  # returns action
 
     def replay(self, batch_size):
+        """
+        Note that the target here refers to the calculated quality/gain/reward from the target policy
+        :param batch_size:
+        :return:
+        """
         if batch_size > len(MEMORY):
             return
+        # Sample random minibatch of transitions from MEMORY
         minibatch = random.sample(MEMORY, batch_size)
         for state, action, reward, next_state, done in minibatch:
             if state is None:
                 continue
             state = state.reshape((1,1,len(state)))
             target = reward
+            """
+            If non-terminal,
+            set target = current_reward + discount_rate + arg_max{a`}(Expectation of Q(next_state, a`))
+            """
             if not done:
                 next_state = next_state.reshape((1,1,len(next_state)))
+                # target = {r + gamma * argmax_a[Q(s,a)]}
                 target = (reward + self.gamma *
                           np.amax(self.model.predict(next_state)[0]))
+            """
+            Else (terminal), target = current_reward
+            """
             target_f = self.model.predict(state)
             target_f[0][action] = target
+            """
+            Perform ONE gradient descent step on state(training), target_f(label)
+            """
             self.model.fit(state, target_f, epochs=1, verbose=0)
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
