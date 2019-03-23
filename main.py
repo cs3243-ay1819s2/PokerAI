@@ -54,9 +54,10 @@ def parse_cli():
 
 # Parse CLI args
 args = parse_cli()
-STATE_SIZE = 134
+# STATE_SIZE = 134
+STATE_SIZE = 125
 BB_SIZE = 10
-STACK_SIZE = 200
+STACK_SIZE = 10000
 N_ACTIONS = 8
 USE_ROLL_INSTEAD_OF_WIN_COUNT = False
 PERSISTENT_STACKS = False

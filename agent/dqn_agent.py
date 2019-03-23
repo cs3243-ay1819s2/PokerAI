@@ -75,7 +75,15 @@ class DQNAgent:
         for state, action, reward, next_state, done in minibatch:
             if state is None:
                 continue
+
+            # print("\n--> state.shape")
+            # print(state.shape)
+
             state = state.reshape((1,1,len(state)))
+
+            # print("\n--> state.shape")
+            # print(state.shape)
+
             target = reward
             if not done:
                 next_state = next_state.reshape((1,1,len(next_state)))
@@ -121,9 +129,10 @@ class DQNAgent:
         river_values = temp_value_zeros
 
         # pot
-        total_main_amount = game_state['pot']['main']['amount']
-        total_side_pot = sum([a['amount'] for a in game_state['pot']['side']])
-        total_pot_as_bb = [(total_main_amount + total_side_pot) / bb_amount]
+        # total_main_amount = game_state['pot']['main']['amount']
+        # total_side_pot = sum([a['amount'] for a in game_state['pot']['side']])
+        # total_pot_as_bb = [(total_main_amount + total_side_pot) / bb_amount]
+        total_pot_as_bb = [game_state['pot']['main']['amount'] / bb_amount]
 
         # own stack size
         own_stack_size = [game_state['seats'][player_idx]['stack'] / bb_amount]
@@ -164,17 +173,23 @@ class DQNAgent:
         money_since_our_last_move = temp_move_zeroes
 
         # amt to call
-        amt_to_call = [0]
-        for action in valid_actions:
-            if action['action'] == 'call':
-                amt_to_call = [action['amount'] / bb_amount]
-                break
+        # amt_to_call = [0]
+        # for action in valid_actions:
+        #     if action['action'] == 'call':
+        #         amt_to_call = [action['amount'] / bb_amount]
+        #         break
 
-        min_raise, max_raise = valid_actions[2]['amount']['min'] / bb_amount, valid_actions[2]['amount']['max'] / bb_amount
+        # min_raise, max_raise = valid_actions[2]['amount']['min'] / bb_amount, valid_actions[2]['amount']['max'] / bb_amount
+
+        # print("own_stack_size " + str(own_stack_size)
+        #         + ", other_players_stack_sizes: " + str(other_players_stack_sizes)
+        #         + ", player_folds: " + str(player_folds)
+        #         + ", money_since_our_last_move: " + str(money_since_our_last_move)
+        #         )
 
         feature_arrays = [hole_values, hole_suits, river_values, river_suits, total_pot_as_bb,
-                own_stack_size, other_players_stack_sizes, player_folds, money_since_our_last_move,
-                amt_to_call, min_raise, max_raise]
+                own_stack_size, other_players_stack_sizes, player_folds, money_since_our_last_move
+                ]
 
         ret = None
 
